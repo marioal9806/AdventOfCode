@@ -41,6 +41,24 @@ def get_repeated_item(line):
         
     return repeated_item
 
+def get_common_item(lines):
+    # Store the common items between all three lines
+    repeated_items = {}
+
+    # Create a dict from the first line
+    line1_dict = get_char_dict(lines[0])
+
+    # Compare it with the second line
+    for char in lines[1]:
+        if char in line1_dict:
+            repeated_items[char] = True
+    
+    # Compare the repeated items with the third line
+    for char in lines[2]:
+        if char in repeated_items:
+            # Return the first character common between all three lines
+            return char
+
 def get_priority(item):
     ascii_value = ord(item)
     # If uppercase, subtract 
@@ -52,8 +70,20 @@ def get_priority(item):
 if __name__ == "__main__":
     with open("input.txt", "r") as input_file:
         priorities_so_far = []
-        for line in input_file:
-            priorities_so_far.append(get_priority(get_repeated_item(line)))
+        
+        # Part 1
+        #for line in input_file:
+        #    priorities_so_far.append(get_priority(get_repeated_item(line)))
+        
+        # Part 2
+        try:
+            while True:
+                lines = []
+                for _ in range(3):
+                    lines.append(next(input_file).rstrip('\n'))
+                priorities_so_far.append(get_priority(get_common_item(lines)))
+        except StopIteration:
+            pass
         
         total_priority = reduce(lambda x, y: x+y, priorities_so_far)
         print(total_priority)    
