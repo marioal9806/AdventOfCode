@@ -12,10 +12,11 @@ crates = {
     9: ['L', 'D', 'T', 'R', 'H', 'P', 'F', 'S']
 }
 
+
 class Shipment:
     def __init__(self, crates):
         self.crates = crates
-    
+
     def __str__(self):
         buf = StringIO()
         for index, stack in self.crates.items():
@@ -29,19 +30,18 @@ class Shipment:
         for i in range(count):
             self.move_crate(stack_from, stack_to)
 
-    def print_last(self):
+    def print_top_crates(self):
         for index, stack in self.crates.items():
             print(self.crates[index][-1], end="")
         print("")
 
+
 if __name__ == "__main__":
     test_ship = Shipment(crates)
-    
+
     with open("input.txt", "r") as input_file:
         for command in input_file:
             _, count_str, _, from_str, _, to_str = command.split(" ")
             test_ship.move_crates(int(count_str), int(from_str), int(to_str))
         print(test_ship)
-        test_ship.print_last()
-        
-    
+        test_ship.print_top_crates()
