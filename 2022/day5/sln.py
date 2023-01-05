@@ -27,8 +27,19 @@ class Shipment:
         self.crates[stack_to].append(self.crates[stack_from].pop())
 
     def move_crates(self, count, stack_from, stack_to):
+        # First half
+        # for i in range(count):
+        #     self.move_crate(stack_from, stack_to)
+
+        # Move the slice to the new position
+        extracted_slice = self.crates[stack_from][-count::]
+
+        # Remove the elements just extracted
         for i in range(count):
-            self.move_crate(stack_from, stack_to)
+            self.crates[stack_from].pop()
+
+        # Add the slice to the destination list
+        self.crates[stack_to].extend(extracted_slice)
 
     def print_top_crates(self):
         for index, stack in self.crates.items():
@@ -45,3 +56,5 @@ if __name__ == "__main__":
             test_ship.move_crates(int(count_str), int(from_str), int(to_str))
         print(test_ship)
         test_ship.print_top_crates()
+
+        # Not SHQWSRBDL
