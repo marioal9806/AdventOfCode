@@ -16,6 +16,8 @@ Then, check for the uniqueness of those 4 elements,
 * Always keep the count of how many elements have been inserted to the queue
 """
 
+DISTINCT_CHARS = 14
+
 
 def check_if_all_unique(queue: list) -> bool:
     """
@@ -30,16 +32,6 @@ def check_if_all_unique(queue: list) -> bool:
         else:
             unique_chars[queue[i]] = True
     return True
-
-
-def fill_up_queue(queue: list, stream: str, size: int = 4) -> tuple[list, int]:
-    """
-    This function receives a list and a data stream (string) and must
-    refill the list up to <size> length. It then returns the number of elements
-    that were added to the list.
-    """
-
-    return ([], 0)
 
 
 def remove_up_to_repeated(queue: list) -> list:
@@ -61,13 +53,13 @@ def remove_up_to_repeated(queue: list) -> list:
 
 
 def main() -> int:
-    with open("input1.txt", "r") as input_file:
+    with open("input.txt", "r") as input_file:
         data_stream = input_file.read()
         queue = []  # The queue that will hold the current 4 chars
         count = 0  # The count of chars scanned from the stream
         i = 0  # The index of the current char being scanned
 
-        for i in range(4):
+        for i in range(DISTINCT_CHARS):
             queue.append(data_stream[i])
             count += 1
             i += 1
@@ -84,7 +76,7 @@ def main() -> int:
                 return count
             else:
                 queue = remove_up_to_repeated(queue)
-                items_to_add = 4 - len(queue)
+                items_to_add = DISTINCT_CHARS - len(queue)
                 for j in range(items_to_add):
                     queue.append(data_stream[i])
                     i += 1
