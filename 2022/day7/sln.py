@@ -42,31 +42,40 @@ class Node:
                 return child
 
 
+def parse_commands(root: Node, commands) -> None:
+    """
+    Grabs a root node and any iterable of strings, where each line
+    corresponds to a command or a file being listed.
+    Fills the root node with the tree-like references to the 
+    directories and files within it.
+    """
+    curr_node = root  # Will be our pointer throughout the tree
+    for line in input_file:  # Parse each command
+        if line.startswith("$"): # It is a command
+            [cmd, *args] = line.lstrip("$").strip().split(" ")  # Parse command
+            match cmd:
+                case "ls":
+                    pass  # The listing of files & directories comes next
+                case "cd":
+                    if args[0] == "..":  # Move to your parent
+                        curr_node = curr_node.parent
+                    elif args[0] == curr_node.name:  # Move to yourself?
+                        pass
+                    else:  # Move to one of your children
+                        curr_node = curr_node.find_child_by_name(args[0])
+                case _:  # We only have two commands, throw error
+                    raise ValueError(f"Command not supported: {cmd}")
+        else:  # We're parsing files and directories
+            if line.startswith("dir"):  # If dir, save it as a child node
+                [_, name] = line.strip().split(" ")
+                curr_node.children.append(Node(name, curr_node))
+            else:  # Else, save the file
+                [size, name] = line.strip().split(" ")
+                curr_node.files.append(File(name, int(size)))
+
+
 if __name__ == "__main__":
     root = Node("/")  # Don't lose the ref to root
-    curr_node = root  # Will be our pointer throughout the tree
 
     with open("example.txt", "r") as input_file:
-        # Parse each command
-        for line in input_file:
-            if line.startswith("$"): # It is a command
-                [cmd, *args] = line.lstrip("$").strip().split(" ")  # Parse command
-                match cmd:
-                    case "ls":
-                        pass  # The listing of files & directories comes next
-                    case "cd":
-                        if args[0] == "..":  # Move to your parent
-                            curr_node = curr_node.parent
-                        elif args[0] == "/":  # Go to the root node
-                            curr_node = root
-                        else:  # Move to one of your children
-                            curr_node = curr_node.find_child_by_name(args[0])
-                    case _:  # We only have two commands, throw error
-                        raise ValueError(f"Command not supported: {cmd}")
-            else:  # We're parsing files and directories
-                if line.startswith("dir"):  # If dir, save it as a child node
-                    [_, name] = line.strip().split(" ")
-                    curr_node.children.append(Node(name, curr_node))
-                else:  # Else, save the file
-                    [size, name] = line.strip().split(" ")
-                    curr_node.files.append(File(name, int(size)))
+        parse_commands(root, input_file)
