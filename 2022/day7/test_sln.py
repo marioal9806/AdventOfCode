@@ -26,15 +26,15 @@ class TestNode(unittest.TestCase):
         self.assertEqual(self.node.size, 600, "Should be 600")
 
     def test_size_w_child_dir(self):
-        child_node = Node("c")
+        child_node = Node("c", self.node)
         child_node.files.extend([File("a", 200), File("b", 400)])
         self.node.children.append(child_node)
         self.node.files.append(File("c", 100))
         self.assertEqual(self.node.size, 700, "Should be 700")
 
     def test_find_child_by_name(self):
-        node_to_find = Node("b")
-        self.node.children.extend([Node("a"), node_to_find, Node("c")])
+        node_to_find = Node("b", self.node)
+        self.node.children.extend([Node("a", self.node), node_to_find, Node("c", self.node)])
         self.assertIs(self.node.find_child_by_name("b"), node_to_find)
 
 if __name__ == "__main__":
