@@ -8,7 +8,7 @@ deeper into the structure.
 from typing import List
 
 class File:
-    def __init__(self, name, size):
+    def __init__(self, name: str, size: int):
         self.name = name
         self.size = size
 
@@ -17,15 +17,15 @@ class File:
 
 
 class Node:
-    def __init__(self, name):
+    def __init__(self, name: str, parent: 'Node' = None):
         self.name = name
-        self.parent = None
+        self.parent: Node = parent
         self.children: List[Node] = []
         self.files: List[File] = []
 
     @property
     def size(self) -> int:
-        sum = 0
+        sum: int = 0
         # First, add the size for your current files
         for file in self.files:
             sum += file.size
@@ -36,7 +36,7 @@ class Node:
 
         return sum
 
-    def find_child_by_name(self, name) -> File:
+    def find_child_by_name(self, name: str) -> 'Node':
         for child in self.children:
             if child.name == name:
                 return child
@@ -50,17 +50,23 @@ if __name__ == "__main__":
         # Parse each command
         for line in input_file:
             if line.startswith("$"): # It is a command
-                [cmd, *args] = line.lstrip("$").split(" ")  # Parse command
+                [cmd, *args] = line.lstrip("$").strip().split(" ")  # Parse command
                 match cmd:
                     case "ls":
                         pass  # The listing of files & directories comes next
                     case "cd":
                         if args[0] == "..":  # Move to your parent
                             curr_node = curr_node.parent
+                        elif args[0] == "/":  # Go to the root node
+                            curr_node = root
                         else:  # Move to one of your children
                             curr_node = curr_node.find_child_by_name(args[0])
                     case _:  # We only have two commands, throw error
                         raise ValueError(f"Command not supported: {cmd}")
             else:  # We're parsing files and directories
-                pass  # TODO: Parse files
-                # Save them into the current node
+                if line.startswith("dir"):  # If dir, save it as a child node
+                    [_, name] = line.strip().split(" ")
+                    curr_node.children.append(Node(name, curr_node))
+                else:  # Else, save the file
+                    [size, name] = line.strip().split(" ")
+                    curr_node.files.append(File(name, int(size)))
