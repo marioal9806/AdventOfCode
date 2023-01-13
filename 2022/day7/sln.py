@@ -3,9 +3,13 @@ It will be a tree data structure
 Every node will be a directory, that contains a list of files
 And the children for every node will in turn be other directories
 deeper into the structure.
+
+Guessed 201875, too low
+Guessed 2011005, too high
 """
 
 from typing import List
+import uuid
 
 class File:
     def __init__(self, name: str, size: int):
@@ -26,13 +30,13 @@ class Node:
     @property
     def size(self) -> int:
         sum: int = 0
-        # First, add the size for your current files
-        for file in self.files:
-            sum += file.size
-
         # Then add the size of your child directories
         for child in self.children:
             sum += child.size
+
+        # First, add the size for your current files
+        for file in self.files:
+            sum += file.size
 
         return sum
 
@@ -49,6 +53,7 @@ def parse_commands(root: Node, commands) -> None:
     Fills the root node with the tree-like references to the 
     directories and files within it.
     """
+    next(input_file)  # Skip '/' insertion
     curr_node = root  # Will be our pointer throughout the tree
     for line in input_file:  # Parse each command
         if line.startswith("$"): # It is a command
@@ -59,10 +64,10 @@ def parse_commands(root: Node, commands) -> None:
                 case "cd":
                     if args[0] == "..":  # Move to your parent
                         curr_node = curr_node.parent
-                    elif args[0] == curr_node.name:  # Move to yourself?
-                        pass
                     else:  # Move to one of your children
                         curr_node = curr_node.find_child_by_name(args[0])
+                        if curr_node is None:  # Child does not exist
+                            raise ValueError(f"Child {args[0]} not found")
                 case _:  # We only have two commands, throw error
                     raise ValueError(f"Command not supported: {cmd}")
         else:  # We're parsing files and directories
@@ -77,5 +82,7 @@ def parse_commands(root: Node, commands) -> None:
 if __name__ == "__main__":
     root = Node("/")  # Don't lose the ref to root
 
-    with open("example.txt", "r") as input_file:
+    with open("input.txt", "r") as input_file:
         parse_commands(root, input_file)
+
+    print(root.size)
