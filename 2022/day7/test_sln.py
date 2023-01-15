@@ -1,6 +1,7 @@
 import unittest
 from sln import File, Node
 
+
 class TestFile(unittest.TestCase):
     def setUp(self):
         self.file = File("a", 200)
@@ -10,7 +11,7 @@ class TestFile(unittest.TestCase):
         self.assertEqual(self.file.name, "a", "Should be a")
 
     def test_str(self):
-        self.assertEqual(str(self.file),"200 a")
+        self.assertEqual(str(self.file), "200 a")
 
 
 class TestNode(unittest.TestCase):
@@ -34,8 +35,15 @@ class TestNode(unittest.TestCase):
 
     def test_find_child_by_name(self):
         node_to_find = Node("b", self.node)
-        self.node.children.extend([Node("a", self.node), node_to_find, Node("c", self.node)])
+        self.node.children.extend(
+            [
+                Node("a", self.node),
+                node_to_find,
+                Node("c", self.node)
+            ]
+        )
         self.assertIs(self.node.find_child_by_name("b"), node_to_find)
+
 
 if __name__ == "__main__":
     unittest.main()

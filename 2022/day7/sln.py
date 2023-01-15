@@ -12,6 +12,7 @@ Guessed 1_423_358 -> Right Answer!
 
 from typing import List
 
+
 class File:
     def __init__(self, name: str, size: int):
         self.name = name
@@ -61,17 +62,18 @@ class Node:
         if self.size >= target_size:
             Node.target_children.append(self)
 
+
 def parse_commands(root: Node, commands) -> None:
     """
     Grabs a root node and any iterable of strings, where each line
     corresponds to a command or a file being listed.
-    Fills the root node with the tree-like references to the 
+    Fills the root node with the tree-like references to the
     directories and files within it.
     """
     next(input_file)  # Skip '/' insertion
     curr_node = root  # Will be our pointer throughout the tree
     for line in input_file:  # Parse each command
-        if line.startswith("$"): # It is a command
+        if line.startswith("$"):  # It is a command
             [cmd, *args] = line.lstrip("$").strip().split(" ")  # Parse command
             match cmd:
                 case "ls":
