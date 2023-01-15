@@ -4,12 +4,13 @@ Every node will be a directory, that contains a list of files
 And the children for every node will in turn be other directories
 deeper into the structure.
 
-Guessed 201875, too low
-Guessed 2011005, too high
+Pt. 1:
+Guessed 201_875, too low
+Guessed 2_011_005, too high
+Guessed 1_423_358 -> Right Answer!
 """
 
 from typing import List
-import uuid
 
 class File:
     def __init__(self, name: str, size: int):
@@ -21,30 +22,44 @@ class File:
 
 
 class Node:
+    target_children: List['Node'] = []
+    target_sum: int = 0
+
     def __init__(self, name: str, parent: 'Node' = None):
         self.name = name
         self.parent: Node = parent
         self.children: List[Node] = []
         self.files: List[File] = []
 
+    def __str__(self):
+        return f"{self.name} {self.size}"
+
     @property
     def size(self) -> int:
-        sum: int = 0
+        node_size: int = 0
         # Then add the size of your child directories
         for child in self.children:
-            sum += child.size
+            node_size += child.size
 
         # First, add the size for your current files
         for file in self.files:
-            sum += file.size
+            node_size += file.size
 
-        return sum
+        if node_size <= 100_000:
+            Node.target_sum += node_size
+
+        return node_size
 
     def find_child_by_name(self, name: str) -> 'Node':
         for child in self.children:
             if child.name == name:
                 return child
 
+    def add_nodes_gt(self, target_size) -> None:
+        for child in self.children:
+            child.add_nodes_gt(target_size)
+        if self.size >= target_size:
+            Node.target_children.append(self)
 
 def parse_commands(root: Node, commands) -> None:
     """
@@ -85,4 +100,17 @@ if __name__ == "__main__":
     with open("input.txt", "r") as input_file:
         parse_commands(root, input_file)
 
+    # Part 1:
     print(root.size)
+    print(Node.target_sum)
+
+    # Part 2:
+    used_space = root.size
+    available_space = 70_000_000 - used_space
+    needed_space = 30_000_000
+    space_to_be_freed = needed_space - available_space
+
+    root.add_nodes_gt(space_to_be_freed)
+
+    Node.target_children.sort(key=lambda x: x.size)
+    print(Node.target_children[0])
